@@ -1,5 +1,7 @@
 import 'package:event_palnning_project/providers/app_theme_provider.dart';
+import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:event_palnning_project/screens/letsgo.dart';
+import 'package:event_palnning_project/screens/onboarding.dart';
 import 'package:event_palnning_project/style/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart'; // Import Easy Localization package
 import 'package:flutter/material.dart';
@@ -37,6 +39,8 @@ class MyApp extends StatelessWidget {
       initialRoute: LetsGo.routeName,
       routes: {
         LetsGo.routeName: (context) => LetsGo(),
+        OnboardingScreen.routeName: (context) => OnboardingScreen(),
+        Homescreen.routeName: (context) => Homescreen()
       },
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
