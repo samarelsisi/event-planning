@@ -7,8 +7,13 @@ import 'package:easy_localization/easy_localization.dart'; // Import Easy Locali
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'cache/cache_helper.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await CacheHelper.init();
+  WidgetsFlutterBinding.ensureInitialized();
+
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(

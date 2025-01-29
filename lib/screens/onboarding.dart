@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../cache/cache_helper.dart';
 import '../style/app_colors.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -71,6 +72,7 @@ class OnboardingScreen extends StatelessWidget {
         style: AppStyles.medium16Primary,
       ),
       onDone: () {
+        CacheHelper.saveEligibility();
         Navigator.pushNamed(context, Homescreen.routeName);
       },
       showNextButton: true,

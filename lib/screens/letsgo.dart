@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/providers/app_theme_provider.dart';
+import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:event_palnning_project/screens/onboarding.dart';
 import 'package:event_palnning_project/style/app_colors.dart';
 import 'package:event_palnning_project/style/assets_manager.dart';
@@ -8,6 +9,9 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+
+import '../cache/cache_helper.dart';
+
 class LetsGo extends StatefulWidget {
   static const String routeName = "let's go screen";
 
@@ -21,6 +25,8 @@ class _LetsGoState extends State<LetsGo> {
   @override
   Widget build(BuildContext context) {
     var themeProvider = Provider.of<AppThemeProvider>(context);
+    bool? isEligible = CacheHelper.getEligibility();
+
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(AssetsManager.bar_logo),
@@ -183,7 +189,12 @@ class _LetsGoState extends State<LetsGo> {
         ),
         child: ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, OnboardingScreen.routeName);
+              Navigator.pushNamed(
+                context,
+                isEligible == true
+                    ? Homescreen.routeName
+                    : OnboardingScreen.routeName,
+              );
             },
             style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 12),
