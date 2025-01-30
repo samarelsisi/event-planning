@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/providers/app_theme_provider.dart';
+import 'package:event_palnning_project/screens/auth/login/login_screen.dart';
 import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:event_palnning_project/screens/onboarding.dart';
 import 'package:event_palnning_project/style/app_colors.dart';
@@ -192,7 +193,7 @@ class _LetsGoState extends State<LetsGo> {
               Navigator.pushNamed(
                 context,
                 isEligible == true
-                    ? Homescreen.routeName
+                    ? LoginScreen.routeName
                     : OnboardingScreen.routeName,
               );
             },

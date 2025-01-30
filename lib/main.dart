@@ -1,4 +1,6 @@
 import 'package:event_palnning_project/providers/app_theme_provider.dart';
+import 'package:event_palnning_project/screens/auth/login/login_screen.dart';
+import 'package:event_palnning_project/screens/auth/register/register.dart';
 import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:event_palnning_project/screens/letsgo.dart';
 import 'package:event_palnning_project/screens/onboarding.dart';
@@ -45,7 +47,9 @@ class MyApp extends StatelessWidget {
       routes: {
         LetsGo.routeName: (context) => LetsGo(),
         OnboardingScreen.routeName: (context) => OnboardingScreen(),
-        Homescreen.routeName: (context) => Homescreen()
+        Homescreen.routeName: (context) => Homescreen(),
+        LoginScreen.routeName: (context) => LoginScreen(),
+        RegisterScreen.routeName: (context) => RegisterScreen()
       },
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
