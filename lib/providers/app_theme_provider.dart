@@ -13,6 +13,14 @@ class AppThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changeProfileThemes(ThemeMode newTheme) {
+    if (appTheme == newTheme) {
+      return;
+    }
+    appTheme = newTheme;
+    notifyListeners();
+  }
+
   bool isDarkMode() {
     return appTheme == ThemeMode.dark;
   }

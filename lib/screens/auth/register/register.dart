@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_palnning_project/main.dart';
 import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

@@ -4,6 +4,7 @@ import 'package:event_palnning_project/screens/auth/register/register.dart';
 import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:event_palnning_project/screens/letsgo.dart';
 import 'package:event_palnning_project/screens/onboarding.dart';
+import 'package:event_palnning_project/screens/tabs/home/add_event/add_event.dart';
 import 'package:event_palnning_project/style/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart'; // Import Easy Localization package
 import 'package:flutter/material.dart';
@@ -49,7 +50,8 @@ class MyApp extends StatelessWidget {
         OnboardingScreen.routeName: (context) => OnboardingScreen(),
         Homescreen.routeName: (context) => Homescreen(),
         LoginScreen.routeName: (context) => LoginScreen(),
-        RegisterScreen.routeName: (context) => RegisterScreen()
+        RegisterScreen.routeName: (context) => RegisterScreen(),
+        AddEvent.routeName: (context) => AddEvent()
       },
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
