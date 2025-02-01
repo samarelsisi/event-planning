@@ -1,3 +1,4 @@
+import 'package:event_palnning_project/firebase/firebase_manager.dart';
 import 'package:event_palnning_project/providers/app_theme_provider.dart';
 import 'package:event_palnning_project/screens/auth/login/login_screen.dart';
 import 'package:event_palnning_project/screens/auth/register/register.dart';
@@ -7,17 +8,20 @@ import 'package:event_palnning_project/screens/onboarding.dart';
 import 'package:event_palnning_project/screens/tabs/home/add_event/add_event.dart';
 import 'package:event_palnning_project/style/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart'; // Import Easy Localization package
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'cache/cache_helper.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
-  WidgetsFlutterBinding.ensureInitialized();
-
+  await Firebase.initializeApp();
+  FirebaseManager.addEvent();
   await EasyLocalization.ensureInitialized();
+
   runApp(
     EasyLocalization(
       supportedLocales: [
