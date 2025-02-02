@@ -1,6 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_palnning_project/firebase/firebase_manager.dart';
+import 'package:event_palnning_project/models/events.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../providers/create_event_provider.dart';
 import '../../../../style/app_colors.dart';
 import '../../../../style/app_styles.dart';
 import '../../../../style/assets_manager.dart';
@@ -40,6 +43,7 @@ class _AddEventState extends State<AddEvent> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<CreateEventsProvider>(context);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     List<String> eventsNameList = [
@@ -64,17 +68,7 @@ class _AddEventState extends State<AddEvent> {
       AssetsManager.holidayImage,
       AssetsManager.eatingImage,
     ];
-    // Map<String,String> mapList = {
-    //   AppLocalizations.of(context)!.sport:AssetsManager.sportImage,
-    //   AppLocalizations.of(context)!.birthday:AssetsManager.birthdayImage,
-    //   AppLocalizations.of(context)!.meeting:AssetsManager.meetingImage,
-    //   AppLocalizations.of(context)!.gaming:AssetsManager.gamingImage,
-    //   AppLocalizations.of(context)!.workshop:AssetsManager.workshopImage,
-    //   AppLocalizations.of(context)!.book_club:AssetsManager.bookClubImage,
-    //   AppLocalizations.of(context)!.exhibition:AssetsManager.exhibitionImage,
-    //   AppLocalizations.of(context)!.holiday:AssetsManager.holidayImage,
-    //   AppLocalizations.of(context)!.eating:AssetsManager.eatingImage,
-    // };
+
     selectedImage = imageSelectedNameList[selectedIndex];
     selectedEventName = eventsNameList[selectedIndex];
     return Scaffold(
@@ -108,6 +102,7 @@ class _AddEventState extends State<AddEvent> {
                       return InkWell(
                         onTap: () {
                           selectedIndex = index;
+                          provider.changeEventType(index);
                           setState(() {});
                         },
                         child: TabEventWidget(
@@ -181,11 +176,7 @@ class _AddEventState extends State<AddEvent> {
                           eventDateOrTime: " event_date".tr(),
                           chooseDateOrTime: selectedDate == null
                               ? "choose_date".tr()
-                              : DateFormat('dd/MM/yyyy').format(selectedDate!)
-                          // formatedDate
-                          // '${selectedDate!.day}/${selectedDate!.month}/'
-                          //     '${selectedDate!.year}'
-                          ,
+                              : DateFormat('dd/MM/yyyy').format(selectedDate!),
                           onChooseDateOrTime: chooseDate),
                       ChooseDateOrTime(
                           iconName: AssetsManager.iconTime,
@@ -243,7 +234,18 @@ class _AddEventState extends State<AddEvent> {
                         height: height * 0.02,
                       ),
                       CustomElevatedButton(
-                          onButtonClicked: () {}, text: "add_event".tr())
+                          onButtonClicked: () {
+                            EventModel event = EventModel(
+                                title: titleController.text,
+                                description: descriptionController.text,
+                                category: selectedEventName,
+                                image: selectedImage,
+                                eventName: selectedEventName,
+                                dateTime: selectedDate as DateTime,
+                                time: selectedTime!.format(context));
+                            FirebaseManager.addEvent(event);
+                          },
+                          text: "add_event".tr())
                     ],
                   ))
             ],
@@ -253,36 +255,6 @@ class _AddEventState extends State<AddEvent> {
     );
   }
 
-  // void addEvent(){
-  //
-  //   if(formKey.currentState?.validate() == true){
-  //     //todo: add event
-  //     Event event = Event(
-  //         title: titleController.text,
-  //         description: descriptionController.text,
-  //         image: selectedImage,
-  //         eventName: selectedEventName,
-  //         dateTime: selectedDate!,
-  //         time: formatedTime!
-  //     );
-  //     FirebaseUtils.addEventToFireStore(event,userProvider.currentUser!.id)
-  //         .then((value){
-  //       //todo: alert dialog , snack bar , toast
-  //       print('event added successfully');
-  //       ToastMessage.toastMsg('Event added Successfully.');
-  //       //todo: refresh events list
-  //       eventListProvider.getAllEvents(userProvider.currentUser!.id);
-  //     }).timeout(
-  //         Duration(milliseconds: 500),onTimeout: (){
-  //           //todo: alert dialog , snack bar , toast
-  //           print('event added successfully');
-  //           //todo: refresh events list
-  //           eventListProvider.getAllEvents(userProvider.currentUser!.id);
-  //           Navigator.pop(context);
-  //     });
-  //   }
-  //
-  // }
   void chooseDate() async {
     var chooseDate = await showDatePicker(
         context: context,
@@ -291,7 +263,8 @@ class _AddEventState extends State<AddEvent> {
         lastDate: DateTime.now().add(Duration(days: 365)));
     selectedDate = chooseDate;
     selectedDate = DateFormat('dd/MM/yyyy').format(chooseDate!) as DateTime?;
-    formatedDate = DateFormat('dd/MMM/yyyy').format(selectedDate!);
+    var provider = Provider.of<CreateEventsProvider>(context, listen: false);
+    provider.changeSelectedDate(selectedDate as DateTime);
     setState(() {});
   }
 

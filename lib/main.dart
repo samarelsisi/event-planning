@@ -1,5 +1,6 @@
 import 'package:event_palnning_project/firebase/firebase_manager.dart';
 import 'package:event_palnning_project/providers/app_theme_provider.dart';
+import 'package:event_palnning_project/providers/create_event_provider.dart';
 import 'package:event_palnning_project/screens/auth/login/login_screen.dart';
 import 'package:event_palnning_project/screens/auth/register/register.dart';
 import 'package:event_palnning_project/screens/homescreen.dart';
@@ -19,7 +20,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
   await Firebase.initializeApp();
-  FirebaseManager.addEvent();
   await EasyLocalization.ensureInitialized();
 
   runApp(
@@ -32,6 +32,7 @@ void main() async {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => AppThemeProvider()),
+          ChangeNotifierProvider(create: (context) => CreateEventsProvider()),
         ],
         child: const MyApp(),
       ),

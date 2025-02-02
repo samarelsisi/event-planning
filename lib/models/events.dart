@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class EventModel {
   static const String collectionName = 'Events';
   String id;
@@ -19,8 +21,7 @@ class EventModel {
   String category;
   bool isDone;
 
-  EventModel(
-      {this.id = '',
+  EventModel({this.id = "",
       required this.title,
       required this.description,
       required this.category,
@@ -34,22 +35,24 @@ class EventModel {
   //constarctor json => object
   EventModel.fromJson(Map<String, dynamic> json)
       : this(
-            id: json['id'] as String,
-            title: json['title'] as String,
-            description: json['description'],
-            category: json['category'],
-            image: json['image'],
-            eventName: json[' eventName'],
-            dateTime: json[' dateTime'],
-            time: json[' time'],
-            isDone: json['isDone'],
-            isFavorite: json['isFavorite']);
+            id: json?['id'] as String? ?? '',
+            title: json?['title'] as String? ?? '',
+            description: json?['description'] as String? ?? '',
+            category: json?['category'] as String? ?? '',
+            image: json?['image'] as String? ?? '',
+            eventName: json?[' eventName'] as String? ?? '',
+            dateTime:
+                (json?['dateTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
+            // Provide a default date if null
+            time: json[' time'] as String? ?? '00.00',
+            isDone: json['isDone'] as bool ?? false,
+            isFavorite: json['isFavorite'] as bool ?? false);
 
 // object => json
   Map<String, dynamic> toJson() {
     return {
       "id": id,
-      " title": title,
+      "title": title,
       "description": description,
       "category": category,
       "image": image,
