@@ -34,4 +34,5 @@ class AssetsManager {
   static const String being_creative = 'assets/images/being-creative.png';
   static const String En_logo = 'assets/images/LR.png';
   static const String Ar_logo = 'assets/images/EG.png';
+  static const String delete_icon = 'assets/images/delete2.png';
 }

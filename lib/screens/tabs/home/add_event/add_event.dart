@@ -3,6 +3,7 @@ import 'package:event_palnning_project/firebase/firebase_manager.dart';
 import 'package:event_palnning_project/models/events.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../providers/app_theme_provider.dart';
 import '../../../../providers/create_event_provider.dart';
 import '../../../../style/app_colors.dart';
 import '../../../../style/app_styles.dart';
@@ -44,6 +45,8 @@ class _AddEventState extends State<AddEvent> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<CreateEventsProvider>(context);
+    var themeProvider = Provider.of<AppThemeProvider>(context);
+
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     List<String> eventsNameList = [
@@ -131,12 +134,17 @@ class _AddEventState extends State<AddEvent> {
                     children: [
                       Text(
                         "title".tr(),
-                        style: AppStyles.medium16Black,
+                        style: themeProvider.appTheme == ThemeMode.light
+                            ? AppStyles.medium16Primary
+                            : AppStyles.medium16White,
                       ),
                       SizedBox(
                         height: height * 0.02,
                       ),
                       CustomTextField(
+                        borderColor: themeProvider.appTheme == ThemeMode.light
+                            ? AppColors.greyColor
+                            : AppColors.whiteColor,
                         controller: titleController,
                         validator: (text) {
                           if (text == null || text.isEmpty) {
@@ -152,7 +160,9 @@ class _AddEventState extends State<AddEvent> {
                       ),
                       Text(
                         "description".tr(),
-                        style: AppStyles.medium16Black,
+                        style: themeProvider.appTheme == ThemeMode.light
+                            ? AppStyles.medium16Primary
+                            : AppStyles.medium16White,
                       ),
                       SizedBox(
                         height: height * 0.02,
@@ -243,7 +253,9 @@ class _AddEventState extends State<AddEvent> {
                                 eventName: selectedEventName,
                                 dateTime: selectedDate as DateTime,
                                 time: selectedTime!.format(context));
-                            FirebaseManager.addEvent(event);
+                            FirebaseManager.addEvent(event).then((value) {
+                              Navigator.pop(context);
+                            });
                           },
                           text: "add_event".tr())
                     ],

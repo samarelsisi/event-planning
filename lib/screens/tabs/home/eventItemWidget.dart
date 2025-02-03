@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_palnning_project/firebase/firebase_manager.dart';
 import 'package:event_palnning_project/models/events.dart';
 import 'package:event_palnning_project/providers/create_event_provider.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +78,18 @@ class EventItemWidget extends StatelessWidget {
                         ? AssetsManager.iconFavoriteSelected
                         : AssetsManager.iconFavorite,
                     color: AppColors.primaryLight,
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                InkWell(
+                  onTap: () {
+                    FirebaseManager.deleteEvent(event.id);
+                  },
+                  child: ImageIcon(
+                    AssetImage(AssetsManager.delete_icon),
+                    color: AppColors.redColor,
                   ),
                 )
               ],

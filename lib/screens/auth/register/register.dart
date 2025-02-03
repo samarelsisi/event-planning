@@ -3,6 +3,7 @@ import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../../../firebase/firebase_manager.dart';
 import '../../../style/app_colors.dart';
 import '../../../style/app_styles.dart';
 import '../../../style/assets_manager.dart';
@@ -18,10 +19,10 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  var nameController = TextEditingController(text: 'samar');
-  var emailController = TextEditingController(text: 'samarelsisi@route');
-  var passwordController = TextEditingController(text: '123456');
-  var rePasswordController = TextEditingController(text: '123456');
+  var nameController = TextEditingController(text: '');
+  var emailController = TextEditingController(text: '');
+  var passwordController = TextEditingController(text: '');
+  var rePasswordController = TextEditingController(text: '');
   var formKey = GlobalKey<FormState>();
 
   @override
@@ -133,7 +134,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 CustomElevatedButton(
                   onButtonClicked: () {
-                    Navigator.pushNamed(context, Homescreen.routeName);
+                    if (formKey.currentState!.validate()) {
+                      FirebaseManager.createAccount(
+                        nameController.text,
+                        emailController.text,
+                        passwordController.text,
+                        () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const AlertDialog(
+                              backgroundColor: Colors.transparent,
+                              title: Center(child: CircularProgressIndicator()),
+                            ),
+                          );
+                        },
+                        () {
+                          Navigator.pop(context);
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            LoginScreen.routeName,
+                            (route) => false,
+                          );
+                        },
+                        (message) {
+                          Navigator.pop(context);
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text("Something went wrong"),
+                              content: Text(message),
+                              actions: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("OK"))
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }
                   },
                   text: "create_account".tr(),
                 ),

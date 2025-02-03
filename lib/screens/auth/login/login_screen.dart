@@ -1,4 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_palnning_project/firebase/firebase_manager.dart';
+import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../../style/app_colors.dart';
@@ -16,15 +18,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  var emailController = TextEditingController(text: 'samarelsisi@route.com');
-  var passwordController = TextEditingController(text: '123456');
+  var emailController = TextEditingController(text: '');
+  var passwordController = TextEditingController(text: '');
   var formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -104,7 +104,43 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: height * 0.02,
                 ),
                 CustomElevatedButton(
-                  onButtonClicked: () {},
+                  onButtonClicked: () {
+                    if (formKey.currentState!.validate()) {
+                      FirebaseManager.login(
+                          emailController.text, passwordController.text, () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const AlertDialog(
+                            backgroundColor: Colors.transparent,
+                            title: Center(child: CircularProgressIndicator()),
+                          ),
+                        );
+                      }, () {
+                        Navigator.pop(context);
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          Homescreen.routeName,
+                          (route) => false,
+                        );
+                      }, (message) {
+                        Navigator.pop(context);
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Something went wrong"),
+                            content: Text(message),
+                            actions: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("OK"))
+                            ],
+                          ),
+                        );
+                      });
+                    }
+                  },
                   text: "login".tr(),
                 ),
                 SizedBox(
@@ -160,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 CustomElevatedButton(
                     onButtonClicked: () {
-                      //todo: login with google
+                      FirebaseManager.signInWithGoogle();
                     },
                     backgroundColor: AppColors.transparentColor,
                     textStyle: AppStyles.medium16Primary,

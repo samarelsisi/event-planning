@@ -118,8 +118,8 @@ class _HomeTabState extends State<HomeTab> {
               ],
             ),
           ),
-          FutureBuilder<QuerySnapshot<EventModel>>(
-              future: FirebaseManager.getEvent(),
+          StreamBuilder<QuerySnapshot<EventModel>>(
+              stream: FirebaseManager.getEvent(),
               builder: (context, snapshot) {
                 return (Expanded(
                     child: Padding(
