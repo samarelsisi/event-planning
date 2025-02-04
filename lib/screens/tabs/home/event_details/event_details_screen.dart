@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/firebase/firebase_manager.dart';
 import 'package:event_palnning_project/providers/app_theme_provider.dart';
 import 'package:event_palnning_project/providers/create_event_provider.dart';
+import 'package:event_palnning_project/screens/tabs/home/event_edit/event_edit_screen.dart';
 import 'package:event_palnning_project/widget/custome_test_filed.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +36,13 @@ class EventDetailsScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventEditScreen(eventModel: event),
+                  ));
+            },
             icon: Icon(Icons.edit_outlined),
             color: Theme.of(context).primaryColor,
           ),

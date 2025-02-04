@@ -131,7 +131,7 @@ class FirebaseManager {
     return docRef.data();
   }
 
-  static Future<void> updateTask(EventModel model) {
+  static Future<void> updateEvent(EventModel model) {
     var collection = getEventsCollection();
     return collection.doc(model.id).update(model.toJson());
   }
