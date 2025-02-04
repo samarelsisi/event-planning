@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/models/events.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import '../models/user_model.dart';
 
 class FirebaseManager {
@@ -28,32 +28,30 @@ class FirebaseManager {
     );
   }
 
-  // static void addEvent() {
-  //   // Create an instance of EventModel
-  //   EventModel event = EventModel(
-  //     title: "event1",
-  //     description: "family time",
-  //     category: "sport",
-  //     image: "sport.png",
-  //     eventName: "football match",
-  //     dateTime: DateTime(2025, 2, 12),
-  //     // Correct DateTime initialization
-  //     time: "2.5",
-  //   );
-  //
-  //   // Add the event to Firestore
-  //
-  // }
   static Future<void> addEvent(EventModel event) {
     var collection = getEventsCollection();
-    var doc = collection.doc(); //Autmatic id
+    var doc = collection.doc(); // Automatic ID
     event.id = doc.id;
     return doc.set(event);
   }
 
-  static Stream<QuerySnapshot<EventModel>> getEvent() {
+  static Stream<QuerySnapshot<EventModel>> getEvent(String categoryName) {
     var collection = getEventsCollection();
-    return collection.orderBy("dateTime").snapshots();
+
+    if (categoryName.toLowerCase() == "all") {
+      return collection
+          .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .orderBy("dateTime") // Ensure "dateTime" is indexed in Firestore
+          .snapshots();
+    } else {
+      print(categoryName.tr());
+      return collection
+          .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where("eventName",
+              isEqualTo: categoryName.tr()) // Fixed filtering condition
+          .orderBy("dateTime") // Requires a composite index in Firestore
+          .snapshots();
+    }
   }
 
   static Future<void> deleteEvent(String id) {
@@ -68,20 +66,15 @@ class FirebaseManager {
   }
 
   static Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
-    // Create a new credential
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
 
-    // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
@@ -115,7 +108,6 @@ class FirebaseManager {
       }
     } catch (e) {
       onError("Something went wrong");
-
       print(e);
     }
   }
@@ -124,22 +116,16 @@ class FirebaseManager {
       Function onSuccess, Function onError) async {
     try {
       onLoading();
-      final credential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-
-      // if (credential.user!.emailVerified) {
       onSuccess();
-      // } else {
-      //   onError("Please verify your mail , check your inbox");
-      // }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       onError("Wrong mail or password");
     }
   }
 
   static Future<UserModel?> readUser() async {
     var collection = getUsersCollection();
-
     DocumentSnapshot<UserModel> docRef =
         await collection.doc(FirebaseAuth.instance.currentUser!.uid).get();
     return docRef.data();
@@ -147,7 +133,10 @@ class FirebaseManager {
 
   static Future<void> updateTask(EventModel model) {
     var collection = getEventsCollection();
-
     return collection.doc(model.id).update(model.toJson());
+  }
+
+  static logout() {
+    FirebaseAuth.instance.signOut();
   }
 }

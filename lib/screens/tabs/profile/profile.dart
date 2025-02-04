@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_palnning_project/firebase/firebase_manager.dart';
 import 'package:event_palnning_project/screens/tabs/profile/theme_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -146,6 +147,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   // eventListProvider.selectedIndex = 0 ;
                   Navigator.of(context)
                       .pushReplacementNamed(LoginScreen.routeName);
+                  FirebaseManager.logout();
                 },
                 child: Row(
                   children: [

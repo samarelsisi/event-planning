@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/firebase/firebase_manager.dart';
+import 'package:event_palnning_project/providers/user_provider.dart';
 import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../style/app_colors.dart';
 import '../../../style/app_styles.dart';
 import '../../../style/assets_manager.dart';
@@ -20,11 +22,13 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   var emailController = TextEditingController(text: '');
   var passwordController = TextEditingController(text: '');
+
   var formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+    var userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -115,8 +119,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             title: Center(child: CircularProgressIndicator()),
                           ),
                         );
-                      }, () {
+                      }, () async {
                         Navigator.pop(context);
+                        await userProvider.initUser();
                         Navigator.pushNamedAndRemoveUntil(
                           context,
                           Homescreen.routeName,

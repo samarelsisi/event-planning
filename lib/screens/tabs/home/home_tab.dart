@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/firebase/firebase_manager.dart';
 import 'package:event_palnning_project/models/events.dart';
+import 'package:event_palnning_project/providers/user_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,8 +12,8 @@ import '../../../style/app_styles.dart';
 import '../../../style/assets_manager.dart';
 import '../../../widget/tabEventWidget.dart';
 import 'package:event_palnning_project/providers/create_event_provider.dart';
-
 import 'eventItemWidget.dart';
+import 'event_details/event_details_screen.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -25,8 +27,8 @@ class _HomeTabState extends State<HomeTab> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    var eventProvider =
-        context.watch<CreateEventsProvider>(); // Listens for changes
+    var eventProvider = context.watch<CreateEventsProvider>();
+    var userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,13 +38,11 @@ class _HomeTabState extends State<HomeTab> {
           SizedBox(width: width * 0.02),
           GestureDetector(
             onTap: () {
-              // Change language when tapped
               if (context.locale.languageCode == 'en') {
-                context.setLocale(Locale('ar'));
+                context.setLocale(const Locale('ar'));
               } else {
-                context.setLocale(Locale('en'));
+                context.setLocale(const Locale('en'));
               }
-              setState(() {}); // Forces rebuild when language changes
             },
             child: Container(
               padding: EdgeInsets.symmetric(
@@ -63,7 +63,8 @@ class _HomeTabState extends State<HomeTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("welcome_back".tr(), style: AppStyles.regular14White),
-            Text("ROUTE", style: AppStyles.bold24White),
+            Text(userProvider.userModel?.name ?? 'Guest',
+                style: AppStyles.medium20White)
           ],
         ),
       ),
@@ -90,12 +91,10 @@ class _HomeTabState extends State<HomeTab> {
                   ],
                 ),
                 DefaultTabController(
-                  length: eventProvider.eventsCategories.length,
+                  length: eventProvider.eventKeys.length,
                   child: TabBar(
                     onTap: (index) {
-                      setState(() {
-                        eventProvider.selectedEventIndex = index;
-                      });
+                      eventProvider.setSelectedEventIndex(index);
                     },
                     isScrollable: true,
                     indicatorColor: AppColors.transparentColor,
@@ -103,14 +102,18 @@ class _HomeTabState extends State<HomeTab> {
                     tabAlignment: TabAlignment.start,
                     labelPadding: EdgeInsets.symmetric(
                         horizontal: width * 0.02, vertical: height * 0.01),
-                    tabs: eventProvider.eventsCategories.map((eventName) {
+                    tabs: eventProvider
+                        .getLocalizedEvents(context)
+                        .map((eventName) {
                       return TabEventWidget(
                         backgroundColor: AppColors.whiteColor,
                         textSelectedStyle: AppStyles.medium16Primary,
                         textUnSelectedStyle: AppStyles.medium16White,
                         isSelected: eventProvider.selectedEventIndex ==
-                            eventProvider.eventsCategories.indexOf(eventName),
-                        eventName: eventName.tr(), // Translate tab names
+                            eventProvider.eventKeys.indexOf(eventProvider
+                                .eventKeys
+                                .firstWhere((key) => key.tr() == eventName)),
+                        eventName: eventName,
                       );
                     }).toList(),
                   ),
@@ -119,26 +122,49 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ),
           StreamBuilder<QuerySnapshot<EventModel>>(
-              stream: FirebaseManager.getEvent(),
-              builder: (context, snapshot) {
-                return (Expanded(
-                    child: Padding(
+            stream: FirebaseManager.getEvent(eventProvider.selectedEvent),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(
+                    child: Text('Error loading events',
+                        style: AppStyles.medium16Primary));
+              }
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                    child: Text('No events available',
+                        style: AppStyles.medium16Primary));
+              }
+              return Expanded(
+                child: Padding(
                   padding: EdgeInsets.symmetric(
                       vertical: height * 0.02, horizontal: width * 0.04),
                   child: ListView.separated(
-                      separatorBuilder: (context, index) {
-                        return SizedBox(
-                          height: height * 0.02,
-                        );
-                      },
-                      itemBuilder: (context, index) {
-                        return EventItemWidget(
-                          event: snapshot.data!.docs[index].data(),
-                        );
-                      },
-                      itemCount: snapshot.data?.docs.length ?? 0),
-                )));
-              })
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: height * 0.02),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          EventModel event = snapshot.data!.docs[index].data();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EventDetailsScreen(event: event),
+                              ));
+                        },
+                        child: EventItemWidget(
+                            event: snapshot.data!.docs[index].data()),
+                      );
+                    },
+                    itemCount: snapshot.data!.docs.length,
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

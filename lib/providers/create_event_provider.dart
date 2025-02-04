@@ -1,67 +1,44 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_palnning_project/main.dart';
 import 'package:flutter/material.dart';
 
 class CreateEventsProvider extends ChangeNotifier {
   int selectedEventIndex = 0;
 
-  List<String> eventsCategories = [
-    "all".tr(),
-    "sport".tr(),
-    "birthday".tr(),
-    "meeting".tr(),
-    "gaming".tr(),
-    "workshop".tr(),
-    "book_club".tr(),
-    "exhibition".tr(),
-    "holiday".tr(),
-    "eating".tr(),
+  final List<String> eventKeys = [
+    "all",
+    "sport",
+    "birthday",
+    "meeting",
+    "gaming",
+    "workshop",
+    "book_club",
+    "exhibition",
+    "holiday",
+    "eating",
   ];
 
-  Map<String, String> localizationEnMap = {
-    "all".tr(): 'All',
-    "sport".tr(): 'Sport',
-    "birthday".tr(): 'Birthday',
-    "meeting".tr(): 'Meeting',
-    "gaming".tr(): 'Gaming',
-    "workshop".tr(): 'WorkShop',
-    "book_club ".tr(): 'Book Club',
-    "exhibition".tr(): 'Exhibition',
-    "holiday ".tr(): 'Holiday',
-    "eating ".tr(): 'Eating'
-  };
-  Map<String, String> localizationArMap = {
-    "all".tr(): "الكل",
-    "sport".tr(): 'رياضة',
-    "birthday".tr(): 'عيد الميلاد',
-    "meeting".tr(): 'اجتماع',
-    "gaming".tr(): 'ألعاب',
-    "workshop".tr(): 'ورشة عمل',
-    "book_club ".tr(): 'نادي الكتاب',
-    "exhibition".tr(): 'معرض',
-    "holiday ".tr(): 'إجازة',
-    "eating ".tr(): 'تناول الطعام'
-  };
-  var selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
 
-  String get imageName => eventsCategories[selectedEventIndex];
-
-  String get selectedEvent => eventsCategories[selectedEventIndex];
-
-  changeSelectedDate(DateTime date) {
-    selectedDate = date;
-
-    notifyListeners();
+  String get selectedEvent {
+    if (selectedEventIndex < 0 || selectedEventIndex >= eventKeys.length) {
+      return "all"; // Default to "all" if index is invalid
+    }
+    return eventKeys[selectedEventIndex];
   }
 
-  changeEventType(int index) {
-    selectedEventIndex = index;
-
+  void changeSelectedDate(DateTime date) {
+    selectedDate = date;
     notifyListeners();
   }
 
   void setSelectedEventIndex(int index) {
-    selectedEventIndex = index;
-    notifyListeners();
+    if (index >= 0 && index < eventKeys.length) {
+      selectedEventIndex = index;
+      notifyListeners();
+    }
+  }
+
+  List<String> getLocalizedEvents(BuildContext context) {
+    return eventKeys.map((key) => key.tr()).toList();
   }
 }

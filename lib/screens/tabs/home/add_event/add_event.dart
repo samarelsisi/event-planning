@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/firebase/firebase_manager.dart';
 import 'package:event_palnning_project/models/events.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../providers/app_theme_provider.dart';
@@ -51,14 +52,14 @@ class _AddEventState extends State<AddEvent> {
     var height = MediaQuery.of(context).size.height;
     List<String> eventsNameList = [
       "sport".tr(),
-      " birthday".tr(),
+      "birthday".tr(),
       "meeting".tr(),
       "gaming".tr(),
       "workshop".tr(),
       "book_club".tr(),
       "exhibition".tr(),
-      " holiday".tr(),
-      " eating".tr(),
+      "holiday".tr(),
+      "eating".tr(),
     ];
     List<String> imageSelectedNameList = [
       AssetsManager.sportImage,
@@ -105,7 +106,6 @@ class _AddEventState extends State<AddEvent> {
                       return InkWell(
                         onTap: () {
                           selectedIndex = index;
-                          provider.changeEventType(index);
                           setState(() {});
                         },
                         child: TabEventWidget(
@@ -246,6 +246,7 @@ class _AddEventState extends State<AddEvent> {
                       CustomElevatedButton(
                           onButtonClicked: () {
                             EventModel event = EventModel(
+                                userId: FirebaseAuth.instance.currentUser!.uid,
                                 title: titleController.text,
                                 description: descriptionController.text,
                                 category: selectedEventName,
@@ -256,6 +257,7 @@ class _AddEventState extends State<AddEvent> {
                             FirebaseManager.addEvent(event).then((value) {
                               Navigator.pop(context);
                             });
+                            Navigator.pop(context);
                           },
                           text: "add_event".tr())
                     ],
