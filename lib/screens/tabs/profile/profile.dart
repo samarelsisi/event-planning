@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/firebase/firebase_manager.dart';
+import 'package:event_palnning_project/providers/user_provider.dart';
 import 'package:event_palnning_project/screens/tabs/profile/theme_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class _ProfileTabState extends State<ProfileTab> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-
+    var userProvider = Provider.of<UserProvider>(context);
     var themeProvider = Provider.of<AppThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
@@ -40,14 +41,12 @@ class _ProfileTabState extends State<ProfileTab> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'John Safwat',
-                  style: AppStyles.bold24White,
-                ),
+                Text(userProvider.userModel?.name ?? 'Guest',
+                    style: AppStyles.medium20White),
                 SizedBox(
                   width: width * .5,
                   child: Text(
-                    'johnsafwat.route@gmail.com',
+                    userProvider.userModel?.email ?? 'route.com',
                     style: AppStyles.medium16White,
                     maxLines: 2,
                   ),

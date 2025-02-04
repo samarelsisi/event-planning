@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_palnning_project/providers/app_theme_provider.dart';
+import 'package:event_palnning_project/screens/auth/login/login_screen.dart';
 import 'package:event_palnning_project/screens/homescreen.dart';
 import 'package:event_palnning_project/style/app_styles.dart';
 import 'package:event_palnning_project/style/assets_manager.dart';
@@ -73,7 +74,7 @@ class OnboardingScreen extends StatelessWidget {
       ),
       onDone: () {
         CacheHelper.saveEligibility();
-        Navigator.pushNamed(context, Homescreen.routeName);
+        Navigator.pushNamed(context, LoginScreen.routeName);
       },
       showNextButton: true,
       next: Icon(icon, color: AppColors.primaryLight, size: 40),

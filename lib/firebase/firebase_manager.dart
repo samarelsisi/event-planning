@@ -86,29 +86,47 @@ class FirebaseManager {
       Function onSuccess,
       Function onError) async {
     try {
+      // Trigger loading indicator
       onLoading();
+
+      // Attempt to create a user with Firebase Authentication
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
-      credential.user!.sendEmailVerification();
+
+      // Send email verification after successful registration
+      await credential.user!.sendEmailVerification();
+
+      // Create a UserModel object to store user information in Firestore
       UserModel userModel = UserModel(
           id: credential.user!.uid,
           name: name,
           email: emailAddress,
           createdAt: DateTime.now().millisecondsSinceEpoch);
+
+      // Save user information in Firestore
       await addUser(userModel);
+
+      // Call onSuccess callback
       onSuccess();
     } on FirebaseAuthException catch (e) {
+      // Firebase-specific errors
       if (e.code == 'weak-password') {
-        onError(e.message);
+        onError("Your password is too weak. Please choose a stronger one.");
       } else if (e.code == 'email-already-in-use') {
-        onError(e.message);
+        onError(
+            "This email address is already in use. Please try another one.");
+      } else if (e.code == 'invalid-email') {
+        onError("The email address is not valid. Please enter a correct one.");
+      } else {
+        onError(e.message ?? "An error occurred while creating the account.");
       }
     } catch (e) {
-      onError("Something went wrong");
-      print(e);
+      // Catching unexpected errors
+      onError("Something went wrong. Please try again.");
+      print(e); // Log the error for debugging purposes
     }
   }
 
